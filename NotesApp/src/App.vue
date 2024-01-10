@@ -2,6 +2,33 @@
 import { ref } from 'vue';
 
 const showModal = ref(false);
+const noteMessage = ref('');
+const notesArr = ref([]);
+
+const handleModal = () => {
+  showModal.value = !showModal.value;
+};
+
+const getRandomColor = () => {
+  const color = "hsl(" + Math.random() * 360 + ", 100%, 75%)";
+  return color;
+}
+
+const addNote = () => {
+  if (!noteMessage.value) {
+    return alert('Please enter a note');
+  }
+
+  notesArr.value.push({
+    id: Math.floor(Math.random() * 12345),
+    text: noteMessage.value,
+    date: new Date().toLocaleDateString(),
+    color: getRandomColor()
+  });
+  noteMessage.value = '';
+  handleModal();
+}
+
 </script>
 
 <template>
@@ -9,21 +36,21 @@ const showModal = ref(false);
     <div v-if="showModal" class="overlay">
       <div class="modal">
         <p>x</p>
-        <textarea />
-        <button class="add-btn">Add Note</button>
-        <button @click="showModal = false" class="close-btn">Close</button>
+        <textarea v-model="noteMessage" />
+        <button @click="addNote" class="add-btn">Add Note</button>
+        <button @click="handleModal" class="close-btn">Close</button>
       </div>
     </div>
     <div class="container">
       <header>
         <h1>Notes</h1>
-        <button @click="showModal = true">+</button>
+        <button @click="handleModal">+</button>
       </header>
       <div class="cards-container">
-        <div class="card">
-          <p class=" main-text">
+        <div v-for="note in notesArr" class="card" :key="note.id" :style="{ backgroundColor: note.color }">
+          <p class=" main-text">{{ note.text }}
           </p>
-          <p class="date"></p>
+          <p class="date">{{ note.date }}</p>
         </div>
       </div>
     </div>
@@ -54,6 +81,11 @@ h1 {
   justify-content: space-between;
   margin-right: 20px;
   margin-bottom: 20px;
+}
+
+.card p {
+  color: black;
+
 }
 
 .main-text {
